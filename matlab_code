@@ -1,0 +1,27 @@
+clear; clc;
+M = diag([3 1 2 5]);
+K = [5 -4 0 0;
+    -4 6 -2 0;
+    0 -2 5 -3;
+    0 0 -3 3];
+q0 = [1 0 0 0].';
+v0 = [0 0 0 0].';
+syms t;
+t_value = linspace(0,20,200);
+
+[phi,lam] = eig(K,M);
+epsilons = diag(phi.'*M*phi);
+phi = phi*diag(sqrt(1./epsilons));
+M_test = phi.'*M*phi;
+EW = diag(sqrt(lam)); %Eigenwerte
+MM = phi; %Modalmatrix
+
+%Bewegung mit AB
+ome = diag(EW);
+COS = diag(cos(EW.*t));
+SIN = diag(sin(EW.*t));
+q = MM*(COS)*MM.'*M*q0 +...
+    MM*(SIN)*(ome^-1)*MM.'*M*v0;
+
+q_value = subs(q,t,t_value);
+plot(t_value,q_value)
